@@ -21,7 +21,7 @@
   },
   "targets": {
     ".NETCoreApp,Version=v2.0": {
-      "lpncn/1.0.0": {
+      "weshop/1.0.0": {
         "dependencies": {
           "Microsoft.NETCore.App": "2.0.0",
           "Pomelo.EntityFrameworkCore.MySql": "2.0.1",
@@ -30,10 +30,10 @@
           "Wlniao.i": "1.0.0-beta-80107"
         },
         "runtime": {
-          "lpncn.dll": {}
+          "weshop.dll": {}
         },
         "compile": {
-          "lpncn.dll": {}
+          "weshop.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -2854,7 +2854,7 @@
     }
   },
   "libraries": {
-    "lpncn/1.0.0": {
+    "weshop/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
