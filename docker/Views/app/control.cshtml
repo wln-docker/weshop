@@ -1,0 +1,115 @@
+﻿<style>
+    .card {width:200px;margin:15px 0px 15px 20px;cursor:pointer;display:inline-block;}
+    .card:hover{opacity:0.9}
+    .image {width:60%;height:100px;display:block;background-color:#558B2F;padding:10% 20%;}
+    .card.all .image {background-color:#880e4f;}
+    .bottom {font-size:20px;text-align:center;font-family:Microsoft YaHei;line-height:60px;}
+</style>
+<div id="app" class="wln"><router-view></router-view></div>
+<template id="app-home">
+    <div>
+        <div class="wln-subtitle">控制面板</div>
+        <el-card class="card" :body-style="{padding:'0px'}" onclick="location.href = 'switch'">
+            <img class="image" src="/icons/switch.svg">
+            <div class="bottom">功能开关</div>
+        </el-card>
+        <el-card class="card" :body-style="{padding:'0px'}" onclick="appHome.options.methods.toWeAPP()">
+            <img class="image" src="/icons/weapp.svg">
+            <div class="bottom">小程序配置</div>
+        </el-card>
+        <el-card class="card" :body-style="{padding:'0px'}" onclick="location.href = 'banner'">
+            <img class="image" src="/icons/banner.svg">
+            <div class="bottom">广告管理</div>
+        </el-card>
+        <el-card class="card" :body-style="{padding:'0px'}" onclick="location.href = 'group'">
+            <img class="image" src="/icons/group.svg">
+            <div class="bottom">商品分组</div>
+        </el-card>
+    </div>
+</template>
+<template id="app-weapp">
+    <div>
+        <div class="wln-subtitle">小程序配置</div>
+        <div class="wln-line"></div>
+        <el-form ref="form" v-model="form" label-width="140px">
+            <el-form-item label="AppID">
+                <el-input v-model="form.appid" placeholder="" style="width:240px"></el-input><span class="tips notnull">小程序ID</span>                
+            </el-form-item>
+            <el-form-item label="AppSecret">
+                <el-input v-model="form.appsecret" placeholder=""style="width:240px"></el-input><span class="tips notnull">小程序密钥</span>
+            </el-form-item>
+            <el-form-item>
+                <el-button icon="el-icon-check" type="primary" @@click="onSubmit">提交</el-button>
+                <el-button icon="el-icon-arrow-left" onclick="history.back()">返回</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
+<script type="text/javascript">
+    var auth = {
+        weapp: false
+    }
+    var vpath = "/control";
+    var appHome = Vue.extend({
+        template: '#app-home',
+        methods: {
+            toWeAPP() {
+                if (auth.weapp) {
+                    router.push(vpath + '/weapp');
+                } else {
+                    app.$message({ type: 'info', message: '您未授权使用此功能' });
+                }
+            },
+        }, created() {
+            $.getJSON('/auth', { code: 'Weshop_Control_WeAPP' }, function (rlt) {
+                auth.weapp = rlt.success;
+            })
+        }
+    })
+    var appWeAPP = Vue.extend({
+        template: '#app-weapp',
+        data: function () {
+            var obj = {
+                form: {
+                    appid: ''
+                    ,
+                    appsecret: ''
+                },
+            }
+            return obj;
+        },
+        methods: {
+            onSubmit: function () {
+                var obj = this.form;
+                if (new Date().getTime() - ts < 10000) {
+                    return app.$message({ type: 'info', message: '请求正在处理中，请稍候' });
+                }
+                else {
+                    ts = new Date().getTime();
+                }
+                $.post(location.pathname + '?do=weapp_set', obj, function (rlt) {
+                    ts = 0;
+                    iTips(rlt.message, rlt.success);
+                });
+            }
+        }, created() {
+            _self = this;
+            var obj = this.form;
+            $.getJSON(location.pathname, { 'do': 'weapp_get' }, function (rlt) {
+                if (rlt.success) {
+                    obj.appid = rlt.appid;
+                    obj.appsecret = rlt.appsecret;
+                } else {
+                    app.$message({ type: 'info', message: rlt.message });
+                }
+            });
+        }
+    })
+    var router = new VueRouter({
+        mode: 'history', routes: [
+            { path: vpath, component: appHome }
+            , { path: vpath + '/weapp', component: appWeAPP }
+        ]
+    });
+    var app = new Vue({ el: '#app', router: router });
+</script>

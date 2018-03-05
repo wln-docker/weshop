@@ -1,5 +1,9 @@
 ﻿<link href="/ueditor/themes/default/css/umeditor.min.css" rel="stylesheet" />
-<style>.el-table__row td{padding:3px 0;}</style>
+<style>
+    .el-table__row td{padding:3px 0;}.tc input{text-align:center;}
+    .el-upload--picture-card{line-height:inherit;width:8em;}
+    .el-upload-list{display:table-cell;}
+</style>
 <div id="app" class="wln"><router-view></router-view></div>
 <template id="app-list">
     <div>
@@ -12,9 +16,9 @@
         </div>
         <el-table :data="rows" :empty-text="message">
             <el-table-column width="50" align="center" label="权重" property="weight"></el-table-column>
-            <el-table-column width="90" align="center" label="图片">
+            <el-table-column width="90" align="center" label="缩略图">
                 <template scope="scope">
-                    <img v-bind:src="scope.row.images" style="width:50px;height:50px;" />
+                    <img v-bind:src="scope.row.image + '!b90'" style="width:50px;height:50px;" />
                 </template>
             </el-table-column>
             <el-table-column label="商品">
@@ -56,29 +60,42 @@
                 <el-form ref="form" v-model="form" label-width="140px">
                     <el-form-item label="商品名称">
                         <el-input v-model="form.name" placeholder="商品名称" style="width:360px"></el-input>
-                        <el-input v-model="form.price" placeholder="参考价格" style="width:120px"></el-input>
+                        <el-input v-model="form.price" placeholder="参考价格" class="tc" style="width:120px"></el-input>
                         <span class="tips notnull"></span>
                     </el-form-item>
                     <el-form-item label="商品分类">
-                        <el-select v-model="form.tags" multiple placeholder="所属分组" style="width:240px">
+                        <el-select v-model="form.tags" multiple placeholder="所属分组" style="width:360px">
                             <el-option v-for="item in tags" :key="item" :label="item" :value="item"></el-option>
                         </el-select>
-                        <el-input v-model="form.brand" placeholder="所属品牌" style="width:240px"></el-input>
+                        <el-input v-model="form.brand" placeholder="所属品牌" class="tc" style="width:120px"></el-input>
                     </el-form-item>
                     <el-form-item label="商品编号">
                         <el-input v-model="form.customno" placeholder="自制编号" style="width:240px"></el-input>
                         <el-input v-model="form.barcode" placeholder="标准条码" style="width:240px"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品图片">
+                    <el-form-item label="缩略图">
                         <el-upload auto-upload="accept" acct="image/*" action="/rest/upload" :show-file-list="false" :on-success="handleUploadSuccess">
-                            <img v-if="form.images" :src="form.images" /><i v-else class="el-icon-upload"></i>
+                            <img v-if="form.image" :src="form.image + '!b90'" /><i v-else class="el-icon-upload"></i>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="轮播图">
+                        <div v-for="item in form.images" class="el-upload el-upload--picture-card el-upload-list">
+                            <img :src="item + '!w4h3m'" />
+                        </div>
+                        <el-upload auto-upload="accept" class="el-upload-list" acct="image/*" action="/rest/upload" :show-file-list="false" list-type="picture-card" :on-success="handleUploadListSuccess">
+                            <i class="el-icon-upload"></i>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="商品状态">
-                        <el-select v-model="form.state" placeholder="请选择" style="width:88px">
+                        <el-select v-model="form.state" placeholder="请选择" class="tc" style="width:88px">
                             <el-option v-for="item in status" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
-                        <el-input v-model="form.weight" placeholder="权重" style="width:60px"></el-input><span class="tips">权重数值越大越靠前</span>
+                        <el-tooltip content="权重数值越大越靠前" placement="bottom">
+                            <el-input v-model="form.weight" placeholder="权重" class="tc" style="width:60px"></el-input>
+                        </el-tooltip>
+                        <el-tooltip content="虚拟销量，与实际销量相加后显示" placement="bottom">
+                            <el-input v-model="form.hot" placeholder="热度" class="tc" style="width:60px"></el-input>
+                        </el-tooltip>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -217,11 +234,15 @@
                     ,
                     category: ''
                     ,
-                    images: ''
+                    image: ''
+                    ,
+                    images: []
                     ,
                     content: ''
                     ,
                     weight: ''
+                    ,
+                    hot: ''
                     ,
                     state: 1
                 },
@@ -233,7 +254,14 @@
         methods: {
             handleUploadSuccess(rlt) {
                 if (rlt.success) {
-                    this.form.images = rlt.url;
+                    this.form.image = rlt.url;
+                } else {
+                    return app.$message({ type: 'info', message: rlt.message });
+                }
+            },
+            handleUploadListSuccess(rlt) {
+                if (rlt.success) {
+                    this.form.images.push(rlt.url);
                 } else {
                     return app.$message({ type: 'info', message: rlt.message });
                 }
@@ -250,13 +278,19 @@
                     ,
                     brand: obj.brand
                     ,
-                    images: obj.images
+                    image: obj.image
+                    ,
+                    images: obj.images.join()
                     ,
                     barcode: obj.barcode
                     ,
                     customno: obj.customno
                     ,
+                    category: obj.category
+                    ,
                     weight: obj.weight
+                    ,
+                    hot: obj.hot
                     ,
                     state: obj.state
                     ,
@@ -315,10 +349,12 @@
                         obj.barcode = rlt.barcode;
                         obj.customno = rlt.customno;
                         obj.category = rlt.category;
+                        obj.image = rlt.image;
                         obj.images = rlt.images;
                         obj.content = rlt.content;
                         obj.weight = rlt.weight;
                         obj.state = rlt.state;
+                        obj.hot = rlt.hot;
                         setTimeout(function () { initUM(_self, obj.content); }, 100);
                     } else {
                         app.$message({ type: 'info', message: rlt.message });

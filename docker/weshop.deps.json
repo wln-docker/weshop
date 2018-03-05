@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "190a068923e019be44ad3408ecd9811664632215"
+    "signature": "dc31543edd568ac6c28ca6f54a8b6446c5665cf5"
   },
   "compilationOptions": {
     "defines": [
@@ -27,7 +27,7 @@
           "Pomelo.EntityFrameworkCore.MySql": "2.0.1",
           "Wlniao.WeAPP": "2.0.0",
           "Wlniao.XCore": "2.0.3-bate8",
-          "Wlniao.i": "1.0.0-beta-80107"
+          "Wlniao.i": "1.0.0-beta1"
         },
         "runtime": {
           "weshop.dll": {}
@@ -2624,7 +2624,7 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
-      "Wlniao.i/1.0.0-beta-80107": {
+      "Wlniao.i/1.0.0-beta1": {
         "dependencies": {
           "Wlniao.XCore": "2.0.3-bate8"
         },
@@ -4336,12 +4336,12 @@
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
     },
-    "Wlniao.i/1.0.0-beta-80107": {
+    "Wlniao.i/1.0.0-beta1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-aXVvV09CqpMmcqHejR0SkifD8VsiBXB0CJBi7mGcgvW9HUUpDs4SsPGJOe8VR+14O3Lo9hLXnUAHw69szAygDQ==",
-      "path": "wlniao.i/1.0.0-beta-80107",
-      "hashPath": "wlniao.i.1.0.0-beta-80107.nupkg.sha512"
+      "sha512": "sha512-zgriCHz8/hjMKHpO9jKiTqSnnVyeAQdXyEOCLAj7n7b2FJ+qksrlBcZSSW7KyB1tv9mGBPuCrsuTaUo26b+vjw==",
+      "path": "wlniao.i/1.0.0-beta1",
+      "hashPath": "wlniao.i.1.0.0-beta1.nupkg.sha512"
     },
     "Wlniao.XCore/2.0.3-bate8": {
       "type": "package",
